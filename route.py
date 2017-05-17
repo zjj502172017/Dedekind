@@ -14,11 +14,12 @@ app = SessionMiddleware(bottle.app(), session_opts)
 def login_check(session):
     user_id = session.get('user_id', -1)
     user_id_cookie = bottle.request.get_cookie('user_id', secret='rbtail')
-    if user_id_cookie is None or user_id == -1:
-        return False
-    elif int(user_id_cookie) != int(user_id):
+    if user_id_cookie is None:
+        session['user_id'] = -1
         return False
     else:
+        if user_id == -1:
+            session['user_id'] = user_id_cookie
         return True
 
 
@@ -53,6 +54,7 @@ def login():
 def do_login():
     username = bottle.request.forms.get('username')
     password = bottle.request.forms.get('password')
+    isSaveStatus = bottle.request.forms.get('loginstatus')
     conn = sqlite3.connect('db_dedekind.db')
     cur = conn.cursor()
     cur.execute('''SELECT user_id, user_password
@@ -65,8 +67,13 @@ def do_login():
         if password == str(user_password):
             s = bottle.request.environ.get('beaker.session')
             s['user_id'] = int(user_id)
-            bottle.response.set_cookie(
-                'user_id', int(user_id), secret='rbtail')
+            if isSaveStatus:
+                bottle.response.set_cookie(
+                    'user_id', int(user_id), secret='rbtail', max_Age=5*24*3600)
+            else:
+                bottle.response.set_cookie(
+                    'user_id', int(user_id), secret='rbtail')
+
         else:
             conn.close()
             bottle.redirect('/login')
@@ -74,6 +81,15 @@ def do_login():
         conn.close()
         bottle.redirect('/login')
     conn.close()
+    bottle.redirect('/')
+
+
+@bottle.route('/logout')
+def logout():
+    s = bottle.request.environ.get('beaker.session')
+    if login_check(s):
+        s['user_id'] = -1
+        bottle.response.delete_cookie('user_id', secret='rbtail')
     bottle.redirect('/')
 
 
