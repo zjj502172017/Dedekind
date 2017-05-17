@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# tmp
+tmp/container_file/
+tmp/container_file_lock/
