@@ -4,11 +4,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>登錄</title>
+    <title>Login</title>
 </head>
 
 <body>
-    <p>登錄</p>
+    <p>Login</p>
     <form action="/login" method="POST">
         <label for="user_name">用戶名：</label>
         <input type="text" size="100" maxlength="100" name="user_name" style="width:400px;">
