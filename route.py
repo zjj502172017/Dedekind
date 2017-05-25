@@ -52,8 +52,8 @@ def login():
 
 @bottle.route('/login', method='POST')
 def do_login():
-    username = bottle.request.forms.get('username')
-    password = bottle.request.forms.get('password')
+    username = bottle.request.forms.get('user_name')
+    password = bottle.request.forms.get('user_password')
     isSaveStatus = bottle.request.forms.get('loginstatus')
     conn = sqlite3.connect('db_dedekind.db')
     cur = conn.cursor()
